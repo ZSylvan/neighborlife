@@ -1,0 +1,92 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: neighborlife
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/neighborlife?useSSL=false&serverTimezone=UTC
+    username: root
+    password: "${SPRING_DATASOURCE_PASSWORD:}"
+  redis:
+    host: 192.168.150.101
+    port: 6379
+    password: "${SPRING_REDIS_PASSWORD:}"
+    lettuce:
+      pool:
+        max-active: 10
+        max-idle: 10
+        min-idle: 1
+        time-between-eviction-runs: 10s
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0
+  jackson:
+    default-property-inclusion: non_null  
+mybatis-plus:
+  type-aliases-package: com.neighborlife.entity  
+logging:
+  level:
+    com.neighborlife: debug
+  pattern:
+    dateformat: mm:ss.SSS
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        neighborlife.seckill.consume: true
+        neighborlife.cdc.event.delay: true
+        neighborlife.mq.consume: true
+        neighborlife.mq.send: true
+        neighborlife.kafka.event.delay: true
+  endpoint:
+    health:
+      show-details: never
+neighborlife:
+  reliability:
+    scheduling-enabled: true
+    max-deliveries: 5
+    claim-idle-ms: 30000
+    order-timeout-minutes: 30
+
+  experience:
+    enabled: ${NEIGHBORLIFE_EXPERIENCE_ENABLED:false}
+  analytics:
+    enabled: ${NEIGHBORLIFE_ANALYTICS_ENABLED:false}
+    bootstrap-servers: ${NEIGHBORLIFE_KAFKA_SERVERS:127.0.0.1:9092}
+    topic: NeighborLifeShopBehavior
+    group: ${NEIGHBORLIFE_KAFKA_GROUP:neighborlife-heat-v1}
+  mq:
+    enabled: ${NEIGHBORLIFE_MQ_ENABLED:false}
+    seckill-enabled: ${NEIGHBORLIFE_MQ_SECKILL_ENABLED:false}
+    nameserver: ${NEIGHBORLIFE_MQ_NAMESERVER:127.0.0.1:9876}
+    group-prefix: ${NEIGHBORLIFE_MQ_GROUP_PREFIX:neighborlife}
+    business-topic: NeighborLifeBusiness
+    deadline-topic: NeighborLifeOrderDeadline
+    consumer-enabled: true
+    lease-seconds: 60
+    relay-batch-size: 20
+    send-timeout-ms: 3000
+  monitor-token: ${NEIGHBORLIFE_MONITOR_TOKEN:}
+  cache:
+    enabled: true
+  memcache:
+    enabled: ${NEIGHBORLIFE_MEMCACHE_ENABLED:false}
+    host: ${NEIGHBORLIFE_MEMCACHE_HOST:127.0.0.1}
+    port: ${NEIGHBORLIFE_MEMCACHE_PORT:11211}
+    timeout-ms: 100
+  cdc:
+    enabled: ${NEIGHBORLIFE_CDC_ENABLED:false}
+    host: ${NEIGHBORLIFE_CDC_HOST:127.0.0.1}
+    port: ${NEIGHBORLIFE_CDC_PORT:11111}
+    schema: ${NEIGHBORLIFE_CDC_SCHEMA:neighborlife}
+    destination: ${NEIGHBORLIFE_CDC_DESTINATION:example}

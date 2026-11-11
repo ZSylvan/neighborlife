@@ -1,0 +1,9 @@
+services:
+  java:
+    command:
+      - mvn
+      - -DskipTests
+      - "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+      - spring-boot:run
+    ports:
+      - "127.0.0.1:5005:5005"
